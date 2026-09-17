@@ -1,0 +1,204 @@
+let repositories = [];
+
+async function searchRepositories() {
+
+    const searchInput = document.getElementById("searchInput");
+    const status = document.getElementById("status");
+    const container = document.getElementById("repoContainer");
+
+    const query = searchInput.value.trim();
+
+    if (query === "") {
+        status.textContent = "Please enter a search term.";
+        container.innerHTML = "";
+        return;
+    }
+
+    status.textContent = "Loading repositories...";
+    container.innerHTML = "";
+
+    try {
+
+        const response = await fetch(
+            `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&per_page=20`
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to fetch repository data.");
+        }
+
+        const data = await response.json();
+
+        repositories = data.items;
+
+        if (repositories.length === 0) {
+            status.textContent = "No repositories found.";
+            return;
+        }
+
+        status.textContent =
+            `Found ${repositories.length} repositories`;
+
+        displayRepositories(repositories);
+
+    } catch (error) {
+
+        status.textContent =
+            "Something went wrong. Please try again.";
+
+        console.error(error);
+    }
+}
+
+
+function displayRepositories(repoList) {
+
+    const container = document.getElementById("repoContainer");
+
+    container.innerHTML = "";
+
+    repoList.forEach(repo => {
+
+        const card = document.createElement("div");
+
+        card.className = "repo-card";
+
+        card.innerHTML = `
+
+            <h2>${repo.name}</h2>
+
+            <p>
+                <strong>Owner:</strong>
+                ${repo.owner.login}
+            </p>
+
+            <p>
+                <strong>Language:</strong>
+                ${repo.language || "Not specified"}
+            </p>
+
+            <p>
+                ⭐ Stars: ${repo.stargazers_count}
+            </p>
+
+            <p>
+                🍴 Forks: ${repo.forks_count}
+            </p>
+
+            <p>
+                ${repo.description || "No description available."}
+            </p>
+
+            <button onclick="showDetails(${repo.id})">
+                View Details
+            </button>
+
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+
+function showDetails(id) {
+
+    const repo = repositories.find(item => item.id === id);
+
+    if (!repo) return;
+
+    const modal = document.getElementById("detailsModal");
+    const details = document.getElementById("repoDetails");
+
+    details.innerHTML = `
+
+        <h2>${repo.full_name}</h2>
+
+        <p><strong>Description:</strong>
+        ${repo.description || "No description available."}</p>
+
+        <p><strong>Language:</strong>
+        ${repo.language || "Not specified"}</p>
+
+        <p><strong>Stars:</strong>
+        ⭐ ${repo.stargazers_count}</p>
+
+        <p><strong>Forks:</strong>
+        🍴 ${repo.forks_count}</p>
+
+        <p><strong>Issues:</strong>
+        ${repo.open_issues_count}</p>
+
+        <p><strong>Default Branch:</strong>
+        ${repo.default_branch}</p>
+
+        <br>
+
+        <a href="${repo.html_url}" target="_blank">
+            Open Repository on GitHub
+        </a>
+
+    `;
+
+    modal.style.display = "flex";
+}
+
+
+function closeModal() {
+
+    document.getElementById("detailsModal").style.display = "none";
+
+}
+
+
+function filterRepositories() {
+
+    const language =
+        document.getElementById("languageFilter").value;
+
+    let filtered = repositories;
+
+    if (language !== "all") {
+
+        filtered = repositories.filter(
+            repo => repo.language === language
+        );
+
+    }
+
+    displayRepositories(filtered);
+}
+
+
+function sortRepositories() {
+
+    const sortType =
+        document.getElementById("sortSelect").value;
+
+    let sorted = [...repositories];
+
+    if (sortType === "stars") {
+
+        sorted.sort(
+            (a, b) => b.stargazers_count - a.stargazers_count
+        );
+
+    }
+
+    else if (sortType === "forks") {
+
+        sorted.sort(
+            (a, b) => b.forks_count - a.forks_count
+        );
+
+    }
+
+    else if (sortType === "name") {
+
+        sorted.sort(
+            (a, b) => a.name.localeCompare(b.name)
+        );
+
+    }
+
+    displayRepositories(sorted);
+}
