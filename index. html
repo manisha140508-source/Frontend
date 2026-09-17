@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitHub Repository Explorer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>GitHub Repository Explorer</h1>
+        <p>Search and explore GitHub repositories</p>
+    </header>
+
+    <main>
+
+        <section class="search-section">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search repositories..."
+            >
+
+            <button onclick="searchRepositories()">
+                Search
+            </button>
+
+        </section>
+
+        <section class="controls">
+
+            <select id="languageFilter" onchange="filterRepositories()">
+                <option value="all">All Languages</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Python">Python</option>
+                <option value="Java">Java</option>
+                <option value="C++">C++</option>
+            </select>
+
+            <select id="sortSelect" onchange="sortRepositories()">
+                <option value="stars">Most Stars</option>
+                <option value="forks">Most Forks</option>
+                <option value="name">Name</option>
+            </select>
+
+        </section>
+
+        <p id="status"></p>
+
+        <section id="repoContainer" class="repo-container"></section>
+
+    </main>
+
+    <div id="detailsModal" class="modal">
+
+        <div class="modal-content">
+
+            <button class="close" onclick="closeModal()">
+                &times;
+            </button>
+
+            <div id="repoDetails"></div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
