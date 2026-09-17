@@ -1,0 +1,12 @@
+# GitHub Repository Explorer
+
+A web application to search and explore GitHub repositories using the GitHub API.
+
+## Features
+
+- Search GitHub repositories
+- Display repository information
+- Filter repositories by language
+- Sort repositories
+- View repository details
+- Handle loading and error states
